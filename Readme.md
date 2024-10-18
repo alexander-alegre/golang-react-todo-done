@@ -38,6 +38,29 @@ npx tailwindcss init -p
 
 - Setup database and migrations
 
+```
+go get github.com/uptrace/bun
+go get github.com/uptrace/bun/dialect/pgdialect
+go get github.com/uptrace/bun/extra/bundebug
+go get github.com/golang-migrate/migrate/v4
+go get github.com/golang-migrate/migrate/v4/database/postgres
+go get github.com/joho/godotenv
+```
+
+```.env
+DB_HOST="localhost"
+DB_USER=""
+DB_PASSWORD="postgres"
+DB_NAME="go_todo"
+APP_DEBUG=1
+```
+
+- Create migration files
+
+```
+make migration add_table_todos
+```
+
 ## Episode 4
 
 - Create CRUD endpoints for TODO's
