@@ -5,7 +5,7 @@
 - Get iris framework
 
 ```
-go get github.com/kataras/iris/v12
+go get github.com/kataras/iris/v12@latest
 ```
 
 - Create web app
@@ -66,5 +66,9 @@ make migration add_table_todos
 - Create CRUD endpoints for TODO's
 
 ## Episode 5
+
+- Create UI
+
+## Episode 6
 
 - Call API endpoints from React application
