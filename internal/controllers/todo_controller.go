@@ -69,7 +69,8 @@ func (c *TodoController) Post(ctx iris.Context) {
 
 type UpdateTodoRequest struct {
 	Task   string
-	TaskID int
+	TodoID int
+	Done   bool
 }
 
 func (c *TodoController) Put(ctx iris.Context) {
@@ -85,11 +86,17 @@ func (c *TodoController) Put(ctx iris.Context) {
 		return
 	}
 
-	todo := models.Todo{
-		ID:        params.TaskID,
-		Task:      params.Task,
-		UpdatedAt: time.Now(),
+	todo, err := services.GetTodoByID(params.TodoID)
+
+	if err != nil {
+		errors.Message = "Unable to find record"
+		ctx.JSON(errors)
+		return
 	}
+
+	todo.UpdatedAt = time.Now()
+	todo.Task = params.Task
+	todo.Done = params.Done
 	services.UpdateTodo(&todo)
 
 	// get all todos
@@ -105,7 +112,7 @@ func (c *TodoController) Put(ctx iris.Context) {
 }
 
 type DeleteTodoRequest struct {
-	TaskID int
+	TodoID int
 }
 
 func (c *TodoController) Delete(ctx iris.Context) {
@@ -114,19 +121,24 @@ func (c *TodoController) Delete(ctx iris.Context) {
 
 	var errors APIErrors
 
-	if params.TaskID <= 0 {
+	if params.TodoID <= 0 {
 		errors.Message = "Task ID required"
 		errors.Details = "Please provide the task ID."
 		ctx.JSON(errors)
 	}
 
-	// mark as deleted
-	todo := models.Todo{
-		ID:        params.TaskID,
-		UpdatedAt: time.Now(),
-		Deleted:   true,
-		DeletedAt: sql.NullTime{Time: time.Now()},
+	todo, err := services.GetTodoByID(params.TodoID)
+
+	if err != nil {
+		errors.Message = "Unable to find record"
+		ctx.JSON(errors)
+		return
 	}
+
+	// mark as deleted
+	todo.UpdatedAt = time.Now()
+	todo.DeletedAt = sql.NullTime{Time: time.Now()}
+	todo.Deleted = true
 	services.UpdateTodo(&todo)
 
 	// get all todos

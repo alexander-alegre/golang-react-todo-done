@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Todo } from "../types/todo";
 import { useEscKey } from "../hooks/useEscape";
+import { useUpdateTodo } from "../hooks/useUpdateTodo";
 
 interface IProps {
   todo: Todo;
@@ -8,12 +9,21 @@ interface IProps {
 }
 
 export default function EditTodo(props: IProps) {
-  const [task, setTask] = useState(props.todo ? props.todo.todo : "");
+  const [task, setTask] = useState(props.todo.task);
+  const [loading, setLoading] = useState(false);
+  const { trigger: updateTodo } = useUpdateTodo();
 
   useEscKey(props.onClose);
 
-  const handleUpdateTodo = () => {
-    console.log("updated todo:", task);
+  const handleUpdateTodo = async () => {
+    setLoading(true);
+    await updateTodo({
+      task: task,
+      todoId: props.todo.ID,
+      done: props.todo.done,
+    });
+    setLoading(false);
+    props.onClose();
   };
 
   return (
@@ -30,7 +40,9 @@ export default function EditTodo(props: IProps) {
           />
           <button
             type="button"
-            className="btn btn-xs sm:btn-sm md:btn-md mt-4"
+            className={`btn btn-xs sm:btn-sm md:btn-md mt-4 ${
+              loading ? "loading" : ""
+            }`}
             onClick={handleUpdateTodo}
           >
             Update

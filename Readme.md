@@ -72,3 +72,7 @@ make migration add_table_todos
 ## Episode 6
 
 - Call API endpoints from React application
+
+```
+npm install swr
+```
